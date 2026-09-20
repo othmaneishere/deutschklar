@@ -1,4 +1,5 @@
 import { VocabTheme } from '../vocabThemesData';
+import { restaurantCafeCards } from './curatedRestaurantCafe';
 
 export const themeEssen: VocabTheme = {
   id: 'essen-trinken',
@@ -13,6 +14,7 @@ export const themeEssen: VocabTheme = {
   descriptionEn: 'Groceries, meals, supermarket shopping and ordering at restaurants',
   descriptionFr: 'Produits d’épicerie, repas, courses et commande au restaurant',
   cards: [
+    ...restaurantCafeCards,
     {
       id: 'et-1',
       de: 'das Brot',
