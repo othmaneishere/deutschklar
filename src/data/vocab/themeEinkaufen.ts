@@ -241,7 +241,7 @@ export const themeEinkaufen: VocabTheme = {
       id: 'ek-17',
       de: 'das Bargeld',
       article: 'das',
-      plural: 'das Bargeld (Sg.)',
+      plural: 'kein Plural / nur Singular',
       ar: 'المال النقدي (الكاش)',
       en: 'cash',
       fr: 'l’argent liquide / espèces',

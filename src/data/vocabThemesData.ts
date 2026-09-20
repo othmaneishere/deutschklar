@@ -66,3 +66,47 @@ export const VOCAB_THEMES: VocabTheme[] = [
   themePostBank,
   themeTiere,
 ];
+
+const normalizeText = (value: string) => value.replace(/\s+/g, ' ').trim();
+
+const auditVocabulary = (themes: VocabTheme[]): VocabTheme[] => {
+  const seenWords = new Set<string>();
+  const seenIds = new Set<string>();
+
+  return themes.map((theme) => ({
+    ...theme,
+    cards: theme.cards
+      .map((card) => {
+        const de = normalizeText(card.de);
+        const inferredKind: NonNullable<VocabCard['kind']> = card.kind || (card.article ? 'noun' : 'phrase');
+        const normalized: VocabCard = {
+          ...card,
+          kind: inferredKind,
+          de,
+          ar: normalizeText(card.ar),
+          en: normalizeText(card.en),
+          fr: normalizeText(card.fr),
+          exampleDe: normalizeText(card.exampleDe),
+          exampleAr: normalizeText(card.exampleAr),
+          exampleEn: normalizeText(card.exampleEn),
+          exampleFr: normalizeText(card.exampleFr),
+          category: normalizeText(card.category),
+          ...(card.plural ? { plural: normalizeText(card.plural) } : {}),
+        };
+
+        if (normalized.kind === 'noun' && (!normalized.article || !normalized.plural)) return null;
+        if (!normalized.de || !normalized.en || !normalized.ar || !normalized.exampleDe || !normalized.exampleEn) return null;
+        return normalized;
+      })
+      .filter((card): card is VocabCard => {
+        if (!card) return false;
+        const wordKey = card.de.toLocaleLowerCase('de-DE');
+        if (seenWords.has(wordKey) || seenIds.has(card.id)) return false;
+        seenWords.add(wordKey);
+        seenIds.add(card.id);
+        return true;
+      }),
+  }));
+};
+
+export const AUDITED_VOCAB_THEMES = auditVocabulary(VOCAB_THEMES);

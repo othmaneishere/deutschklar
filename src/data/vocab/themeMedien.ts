@@ -45,7 +45,7 @@ export const themeMedien: VocabTheme = {
       id: 'km-3',
       de: 'das Internet',
       article: 'das',
-      plural: 'das Internet (Sg.)',
+      plural: 'kein Plural / nur Singular',
       ar: 'الإنترنت / الشبكة العنكبوتية',
       en: 'internet',
       fr: 'l’Internet',

@@ -143,7 +143,7 @@ export const themeReisen: VocabTheme = {
       id: 'ru-10',
       de: 'das Handgepäck',
       article: 'das',
-      plural: 'das Handgepäck (Sg.)',
+      plural: 'kein Plural / nur Singular',
       ar: 'أمتعة المقصورة المحمولة باليد',
       en: 'carry-on luggage / hand luggage',
       fr: 'le bagage à main',

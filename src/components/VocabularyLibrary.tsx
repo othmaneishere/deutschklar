@@ -41,7 +41,7 @@ import {
   Shuffle,
   Bookmark,
 } from 'lucide-react';
-import { VOCAB_THEMES, VocabTheme, VocabCard } from '../data/vocabThemesData';
+import { AUDITED_VOCAB_THEMES, VocabTheme, VocabCard } from '../data/vocabThemesData';
 import { LanguageMode } from '../types';
 import { speakGerman, stopSpeech, setPlaybackSpeed, getPlaybackSpeed } from '../utils/speech';
 
@@ -76,7 +76,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
   languageMode,
   onNavigateToCourse,
 }) => {
-  const [selectedThemeId, setSelectedThemeId] = useState<string>(VOCAB_THEMES[0].id);
+  const [selectedThemeId, setSelectedThemeId] = useState<string>(AUDITED_VOCAB_THEMES[0].id);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [levelFilter, setLevelFilter] = useState<'all' | 'A1' | 'A2'>('all');
   const [articleFilter, setArticleFilter] = useState<ArticleFilter>('all');
@@ -153,7 +153,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
 
   // Filter themes by level
   const filteredThemes = useMemo(() => {
-    return VOCAB_THEMES.filter((t) => {
+    return AUDITED_VOCAB_THEMES.filter((t) => {
       if (levelFilter !== 'all' && t.level !== levelFilter) return false;
       return true;
     });
@@ -163,7 +163,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
     return (
       filteredThemes.find((t) => t.id === selectedThemeId) ||
       filteredThemes[0] ||
-      VOCAB_THEMES[0]
+      AUDITED_VOCAB_THEMES[0]
     );
   }, [filteredThemes, selectedThemeId]);
 
@@ -178,7 +178,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
 
   // All cards across all themes (for search or trainer)
   const allCards = useMemo(() => {
-    return VOCAB_THEMES.flatMap((t) => t.cards);
+    return AUDITED_VOCAB_THEMES.flatMap((t) => t.cards);
   }, []);
 
   // Filtered Cards
@@ -227,7 +227,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
 
   // Total words count
   const totalWordsCount = useMemo(() => {
-    return VOCAB_THEMES.reduce((acc, t) => acc + t.cards.length, 0);
+    return AUDITED_VOCAB_THEMES.reduce((acc, t) => acc + t.cards.length, 0);
   }, []);
 
   // Translations
@@ -383,7 +383,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 shrink-0">
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3.5 text-center">
-              <div className="text-2xl font-black text-indigo-400">{VOCAB_THEMES.length}</div>
+              <div className="text-2xl font-black text-indigo-400">{AUDITED_VOCAB_THEMES.length}</div>
               <div className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">Themen</div>
             </div>
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3.5 text-center">
@@ -591,7 +591,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
                     : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
                 }`}
               >
-                Alle {VOCAB_THEMES.length} Themen ({allCards.filter((c) => !!c.article).length} Wörter)
+                Alle {AUDITED_VOCAB_THEMES.length} Themen ({allCards.filter((c) => !!c.article).length} Wörter)
               </button>
             </div>
           </div>
@@ -1202,5 +1202,6 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
     </div>
   );
 };
+
 
 
