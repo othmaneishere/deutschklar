@@ -15,6 +15,7 @@ import { themeBildung } from './vocab/themeBildung';
 import { themeZahlenZeit } from './vocab/themeZahlenZeit';
 import { themePostBank } from './vocab/themePostBank';
 import { themeTiere } from './vocab/themeTiere';
+import { courseVocabularyByTheme } from './courseVocabularyCards';
 
 export interface VocabCard {
   id: string;
@@ -65,3 +66,12 @@ export const VOCAB_THEMES: VocabTheme[] = [
   themePostBank,
   themeTiere,
 ];
+
+const courseCardsByTheme = courseVocabularyByTheme(VOCAB_THEMES);
+VOCAB_THEMES.forEach((theme) => {
+  const existing = new Set(theme.cards.map((card) => card.de.toLocaleLowerCase('de-DE')));
+  const additions = (courseCardsByTheme.get(theme.id) || []).filter(
+    (card) => !existing.has(card.de.toLocaleLowerCase('de-DE')),
+  );
+  theme.cards.push(...additions);
+});
