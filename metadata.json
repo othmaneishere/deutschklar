@@ -1,0 +1,6 @@
+{
+  "name": "DeutscheKlar",
+  "description": "DeutscheKlar – Premium, calm German learning platform with complete A1 & A2 interactive courses, Hörgeschichten story cards, large themed Wortschatz library, comprehensive structured German grammar course, and French-first introduction.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
