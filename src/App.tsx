@@ -82,8 +82,13 @@ export function App() {
   const navigateToView = (view: NavViewMode, filter: SectionFilterType = 'all') => {
     setActiveView(view);
     setSectionFilter(filter);
+    setShowCheatSheet(false);
+    setShowShortcuts(false);
+    setShowAudioSettings(false);
+    setComingSoonLevel(null);
     const path = filter === 'exercises' ? '/uebungen' : viewToRoute[view];
     if (window.location.pathname !== path) window.history.pushState({}, '', path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -91,10 +96,27 @@ export function App() {
       const route = routeToView(window.location.pathname);
       setActiveView(route.view);
       setSectionFilter(route.filter);
+      setShowCheatSheet(false);
+      setShowShortcuts(false);
+      setShowAudioSettings(false);
+      setComingSoonLevel(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  useEffect(() => {
+    const titles: Record<NavViewMode, string> = {
+      landing: 'DeutscheKlar – Startseite',
+      course: 'DeutscheKlar – A1-Kurs',
+      'course-a2': 'DeutscheKlar – A2-Kurs',
+      grammar: 'DeutscheKlar – Grammatik',
+      vocab: 'DeutscheKlar – Wortschatz',
+      stories: 'DeutscheKlar – Hören',
+    };
+    document.title = titles[activeView];
+  }, [activeView]);
 
   // Sidebar toggle state (starts closed so screen is wide and uncluttered)
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
