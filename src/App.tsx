@@ -30,22 +30,30 @@ import { GrammarHub } from './components/GrammarHub';
 import { A2ComingSoonModal } from './components/A2ComingSoonModal';
 import { getPlaybackSpeed, subscribeSpeechState } from './utils/speech';
 
+const routeToView = (pathname: string): { view: NavViewMode; filter: SectionFilterType } => {
+  switch (pathname) {
+    case '/a1kurs': return { view: 'course', filter: 'all' };
+    case '/a2kurs': return { view: 'course-a2', filter: 'all' };
+    case '/grammatik': return { view: 'grammar', filter: 'all' };
+    case '/wortschatz': return { view: 'vocab', filter: 'all' };
+    case '/hoeren': return { view: 'stories', filter: 'all' };
+    case '/uebungen': return { view: 'course', filter: 'exercises' };
+    case '/': return { view: 'landing', filter: 'all' };
+    default: return { view: 'landing', filter: 'all' };
+  }
+};
+
+const viewToRoute: Record<NavViewMode, string> = {
+  landing: '/', course: '/a1kurs', 'course-a2': '/a2kurs', stories: '/hoeren',
+  vocab: '/wortschatz', grammar: '/grammatik',
+};
+
 export function App() {
   // Primary Navigation View: 'landing' | 'course' (A1) | 'course-a2' (A2) | 'stories' | 'vocab' | 'grammar'
   const [activeView, setActiveView] = useState<NavViewMode>(() => {
-    const saved = localStorage.getItem('deutsch_active_view');
-    if (saved === 'videos') return 'stories';
-    if (
-      saved === 'landing' ||
-      saved === 'course' ||
-      saved === 'course-a2' ||
-      saved === 'stories' ||
-      saved === 'vocab' ||
-      saved === 'grammar'
-    ) {
-      return saved;
-    }
-    return 'course';
+    const route = routeToView(window.location.pathname);
+    if (window.location.pathname !== '/') return route.view;
+    return 'landing';
   });
 
   // Saved Language Mode: 'none' (DE only), 'ar', 'en', 'fr'
@@ -67,7 +75,26 @@ export function App() {
   });
 
   // Section filter
-  const [sectionFilter, setSectionFilter] = useState<SectionFilterType>('all');
+  const [sectionFilter, setSectionFilter] = useState<SectionFilterType>(
+    () => routeToView(window.location.pathname).filter,
+  );
+
+  const navigateToView = (view: NavViewMode, filter: SectionFilterType = 'all') => {
+    setActiveView(view);
+    setSectionFilter(filter);
+    const path = filter === 'exercises' ? '/uebungen' : viewToRoute[view];
+    if (window.location.pathname !== path) window.history.pushState({}, '', path);
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = routeToView(window.location.pathname);
+      setActiveView(route.view);
+      setSectionFilter(route.filter);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Sidebar toggle state (starts closed so screen is wide and uncluttered)
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
@@ -189,7 +216,7 @@ export function App() {
       } else if (e.key === 's' || e.key === 'S') {
         setShowCheatSheet((v) => !v);
       } else if (e.key === 'v' || e.key === 'V') {
-        setActiveView((v) => (v === 'course' ? 'stories' : 'course'));
+        navigateToView(activeView === 'course' ? 'stories' : 'course');
       } else if (e.key === '?') {
         setShowShortcuts((v) => !v);
       } else if (e.key === 'Escape') {
@@ -230,14 +257,14 @@ export function App() {
         <LandingPage
           onStartCourse={(lvl) => {
             if (lvl === 'A2') {
-              setActiveView('course-a2');
+              navigateToView('course-a2');
             } else {
-              setActiveView('course');
+              navigateToView('course');
             }
           }}
-          onGoToStories={() => setActiveView('stories')}
-          onGoToVocab={() => setActiveView('vocab')}
-          onGoToGrammar={() => setActiveView('grammar')}
+          onGoToStories={() => navigateToView('stories')}
+          onGoToVocab={() => navigateToView('vocab')}
+          onGoToGrammar={() => navigateToView('grammar')}
           languageMode={languageMode}
           onLanguageChange={setLanguageMode}
         />
@@ -260,7 +287,7 @@ export function App() {
         onLanguageChange={setLanguageMode}
         onOpenCheatSheet={() => setShowCheatSheet(true)}
         activeView={activeView}
-        onSelectView={setActiveView}
+        onSelectView={navigateToView}
         onOpenAudioSettings={() => setShowAudioSettings(true)}
         onOpenLevelComingSoon={(lvl) => setComingSoonLevel(lvl)}
         showTranslations={showTranslations}
@@ -279,7 +306,7 @@ export function App() {
           totalPages={activeCoursePages.length}
           languageMode={languageMode}
           activeView={activeView}
-          onSelectView={setActiveView}
+          onSelectView={navigateToView}
           onOpenLevelComingSoon={(lvl) => setComingSoonLevel(lvl)}
         />
 
@@ -293,7 +320,7 @@ export function App() {
           >
             <GermanStoriesLounge
               languageMode={languageMode}
-              onSwitchToCourse={() => setActiveView('course')}
+              onSwitchToCourse={() => navigateToView('course')}
               onOpenAudioSettings={() => setShowAudioSettings(true)}
               onOpenLevelComingSoon={(lvl) => setComingSoonLevel(lvl)}
             />
@@ -309,9 +336,9 @@ export function App() {
               languageMode={languageMode}
               onNavigateToCourse={(lvl) => {
                 if (lvl === 'A2') {
-                  setActiveView('course-a2');
+                  navigateToView('course-a2');
                 } else {
-                  setActiveView('course');
+                  navigateToView('course');
                 }
               }}
             />
@@ -327,9 +354,9 @@ export function App() {
               languageMode={languageMode}
               onNavigateToCourse={(lvl) => {
                 if (lvl === 'A2') {
-                  setActiveView('course-a2');
+                  navigateToView('course-a2');
                 } else {
-                  setActiveView('course');
+                  navigateToView('course');
                 }
               }}
             />
@@ -352,7 +379,7 @@ export function App() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setActiveView('course')}
+                  onClick={() => navigateToView('course')}
                   className="text-purple-700 hover:text-purple-900 font-semibold cursor-pointer underline underline-offset-2"
                 >
                   Zu A1 wechseln →
@@ -505,7 +532,7 @@ export function App() {
             {!isA2 && (
               <GermanStoriesSection
                 languageMode={languageMode}
-                onOpenFullLounge={() => setActiveView('stories')}
+                onOpenFullLounge={() => navigateToView('stories')}
               />
             )}
 
