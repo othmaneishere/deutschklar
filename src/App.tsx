@@ -23,7 +23,6 @@ import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { GlobalAudioPlayerBar } from './components/GlobalAudioPlayerBar';
 import { AudioSettingsModal } from './components/AudioSettingsModal';
 import { GermanStoriesLounge } from './components/GermanStoriesLounge';
-import { GermanStoriesSection } from './components/GermanStoriesSection';
 import { LandingPage } from './components/LandingPage';
 import { VocabularyLibrary } from './components/VocabularyLibrary';
 import { GrammarHub } from './components/GrammarHub';
@@ -36,7 +35,7 @@ const routeToView = (pathname: string): { view: NavViewMode; filter: SectionFilt
     case '/a2kurs': return { view: 'course-a2', filter: 'all' };
     case '/grammatik': return { view: 'grammar', filter: 'all' };
     case '/wortschatz': return { view: 'vocab', filter: 'all' };
-    case '/hoeren': return { view: 'stories', filter: 'all' };
+    case '/geschichten': return { view: 'stories', filter: 'all' };
     case '/uebungen': return { view: 'course', filter: 'exercises' };
     case '/': return { view: 'landing', filter: 'all' };
     default: return { view: 'landing', filter: 'all' };
@@ -44,7 +43,7 @@ const routeToView = (pathname: string): { view: NavViewMode; filter: SectionFilt
 };
 
 const viewToRoute: Record<NavViewMode, string> = {
-  landing: '/', course: '/a1kurs', 'course-a2': '/a2kurs', stories: '/hoeren',
+  landing: '/', course: '/a1kurs', 'course-a2': '/a2kurs', stories: '/geschichten',
   vocab: '/wortschatz', grammar: '/grammatik',
 };
 
@@ -113,7 +112,7 @@ export function App() {
       'course-a2': 'DeutscheKlar – A2-Kurs',
       grammar: 'DeutscheKlar – Grammatik',
       vocab: 'DeutscheKlar – Wortschatz',
-      stories: 'DeutscheKlar – Hören',
+      stories: 'DeutscheKlar – Hörgeschichten',
     };
     document.title = titles[activeView];
   }, [activeView]);
@@ -548,14 +547,6 @@ export function App() {
                   />
                 ))}
               </div>
-            )}
-
-            {/* In-Course German Voice Stories Section */}
-            {!isA2 && (
-              <GermanStoriesSection
-                languageMode={languageMode}
-                onOpenFullLounge={() => navigateToView('stories')}
-              />
             )}
 
             {/* Clean Navigation Footer */}
