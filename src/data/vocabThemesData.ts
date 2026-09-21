@@ -15,6 +15,7 @@ import { themeBildung } from './vocab/themeBildung';
 import { themeZahlenZeit } from './vocab/themeZahlenZeit';
 import { themePostBank } from './vocab/themePostBank';
 import { themeTiere } from './vocab/themeTiere';
+import { additions, newThemes } from './vocab/curatedExpansion';
 
 export interface VocabCard {
   id: string;
@@ -22,6 +23,8 @@ export interface VocabCard {
   de: string;
   article?: 'der' | 'die' | 'das';
   plural?: string;
+  /** Verb principal parts or other useful inflection; never a noun plural. */
+  forms?: string;
   ar: string;
   en: string;
   fr: string;
@@ -65,7 +68,11 @@ export const VOCAB_THEMES: VocabTheme[] = [
   themeZahlenZeit,
   themePostBank,
   themeTiere,
-];
+  ...newThemes,
+].map((theme) => ({
+  ...theme,
+  cards: [...theme.cards, ...(additions[theme.id] || [])],
+}));
 
 const normalizeText = (value: string) => value.replace(/\s+/g, ' ').trim();
 

@@ -138,7 +138,8 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
   // Copy word to clipboard
   const handleCopy = (card: VocabCard, e: React.MouseEvent) => {
     e.stopPropagation();
-    const textToCopy = `${card.de}${card.plural ? ` (${card.plural})` : ''} - ${getTranslation(card)}\nBeispiel: ${card.exampleDe}`;
+    const inflection = card.plural || card.forms;
+    const textToCopy = `${card.de}${inflection ? ` (${inflection})` : ''} - ${getTranslation(card)}\nBeispiel: ${card.exampleDe}`;
     navigator.clipboard.writeText(textToCopy);
     setCopiedId(card.id);
     setTimeout(() => setCopiedId(null), 1800);
@@ -205,6 +206,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
       return (
         card.de.toLowerCase().includes(q) ||
         (card.plural && card.plural.toLowerCase().includes(q)) ||
+        (card.forms && card.forms.toLowerCase().includes(q)) ||
         card.ar.includes(q) ||
         card.en.toLowerCase().includes(q) ||
         card.fr.toLowerCase().includes(q) ||
@@ -1058,10 +1060,10 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
                             </div>
 
                             {/* Plural Form */}
-                            {card.plural && (
+                            {(card.plural || card.forms) && (
                               <div className="text-xs text-slate-500 font-mono mb-2 flex items-center gap-1.5">
-                                <span className="text-slate-400">Plural:</span>
-                                <span className="font-semibold text-slate-700">{card.plural}</span>
+                                <span className="text-slate-400">{card.kind === 'verb' ? 'Formen:' : 'Plural:'}</span>
+                                <span className="font-semibold text-slate-700">{card.plural || card.forms}</span>
                               </div>
                             )}
 
@@ -1123,7 +1125,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
                           <th className="py-3 px-3 w-10 text-center">⭐</th>
                           <th className="py-3 px-3 w-20">Artikel</th>
                           <th className="py-3 px-4">Wort (Deutsch)</th>
-                          <th className="py-3 px-4">Plural</th>
+                          <th className="py-3 px-4">Plural / Formen</th>
                           <th className="py-3 px-4">Übersetzung</th>
                           <th className="py-3 px-4">Beispielsatz</th>
                           <th className="py-3 px-3 text-right">Audio</th>
@@ -1166,7 +1168,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
                                 {card.de.replace(/^(der|die|das)\s+/, '')}
                               </td>
                               <td className="py-3 px-4 font-mono text-xs text-slate-500">
-                                {card.plural || '–'}
+                                {card.plural || card.forms || '–'}
                               </td>
                               <td className="py-3 px-4 font-semibold text-indigo-950">
                                 {getTranslation(card)}
