@@ -3,7 +3,6 @@ import {
   Search,
   Volume2,
   VolumeX,
-  Filter,
   Sparkles,
   Layers,
   ArrowRight,
@@ -52,7 +51,7 @@ interface VocabularyLibraryProps {
 }
 
 type ViewMode = 'cards' | 'table' | 'trainer';
-type ArticleFilter = 'all' | 'der' | 'die' | 'das';
+
 
 const THEME_ICONS: Record<string, React.FC<{ className?: string }>> = {
   Utensils,
@@ -78,8 +77,6 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
 }) => {
   const [selectedThemeId, setSelectedThemeId] = useState<string>(AUDITED_VOCAB_THEMES[0].id);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [levelFilter, setLevelFilter] = useState<'all' | 'A1' | 'A2'>('all');
-  const [articleFilter, setArticleFilter] = useState<ArticleFilter>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
@@ -152,21 +149,12 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
     setPlaybackSpeed(newSlow ? 0.75 : 1.0);
   };
 
-  // Filter themes by level
-  const filteredThemes = useMemo(() => {
-    return AUDITED_VOCAB_THEMES.filter((t) => {
-      if (levelFilter !== 'all' && t.level !== levelFilter) return false;
-      return true;
-    });
-  }, [levelFilter]);
-
   const activeTheme = useMemo(() => {
     return (
-      filteredThemes.find((t) => t.id === selectedThemeId) ||
-      filteredThemes[0] ||
+      AUDITED_VOCAB_THEMES.find((t) => t.id === selectedThemeId) ||
       AUDITED_VOCAB_THEMES[0]
     );
-  }, [filteredThemes, selectedThemeId]);
+  }, [selectedThemeId]);
 
   // Categories in the active theme
   const categoriesInActiveTheme = useMemo(() => {
@@ -190,11 +178,6 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
       : activeTheme.cards;
 
     return sourceCards.filter((card) => {
-      // Article filter
-      if (articleFilter !== 'all') {
-        if (card.article !== articleFilter) return false;
-      }
-
       // Category filter
       if (!showOnlyFavorites && selectedCategory !== 'all' && card.category !== selectedCategory) {
         return false;
@@ -222,7 +205,6 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
     allCards,
     favorites,
     activeTheme.cards,
-    articleFilter,
     selectedCategory,
     searchQuery,
   ]);
@@ -720,11 +702,11 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
       {/* Main Study Views (Cards & Table) */}
       {viewMode !== 'trainer' && (
         <div className="space-y-6">
-          {/* Search, Level & Article Filters Bar */}
+          {/* Search and existing category controls */}
           <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
               {/* Search Bar */}
-              <div className="md:col-span-6 relative">
+              <div className="md:col-span-12 relative">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
@@ -744,53 +726,6 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
                 )}
               </div>
 
-              {/* Level Filter */}
-              <div className="md:col-span-3 flex items-center gap-1.5">
-                {(['all', 'A1', 'A2'] as const).map((lvl) => (
-                  <button
-                    key={lvl}
-                    type="button"
-                    onClick={() => setLevelFilter(lvl)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-bold transition cursor-pointer text-center ${
-                      levelFilter === lvl
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                    }`}
-                  >
-                    {lvl === 'all' ? 'Alle Niveaus' : lvl}
-                  </button>
-                ))}
-              </div>
-
-              {/* Article Filter (der/die/das) */}
-              <div className="md:col-span-3 flex items-center gap-1">
-                {(['all', 'der', 'die', 'das'] as const).map((art) => {
-                  const isSelected = articleFilter === art;
-                  const color =
-                    art === 'der'
-                      ? 'bg-blue-600 text-white'
-                      : art === 'die'
-                      ? 'bg-rose-600 text-white'
-                      : art === 'das'
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-slate-900 text-white';
-
-                  return (
-                    <button
-                      key={art}
-                      type="button"
-                      onClick={() => setArticleFilter(art)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-bold transition cursor-pointer text-center ${
-                        isSelected
-                          ? `${color} shadow-xs`
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                      }`}
-                    >
-                      {art === 'all' ? 'Alle' : art}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             {/* Sub-Category Pills */}
@@ -837,7 +772,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
             <div className="space-y-2.5 lg:col-span-1">
               <div className="flex items-center justify-between px-2">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  Themen ({filteredThemes.length})
+                  Themen ({AUDITED_VOCAB_THEMES.length})
                 </span>
                 <span className="text-[11px] font-semibold text-slate-400">
                   {totalWordsCount} Wörter gesamt
@@ -845,7 +780,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
               </div>
 
               <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none">
-                {filteredThemes.map((theme) => {
+                {AUDITED_VOCAB_THEMES.map((theme) => {
                   const isSelected = theme.id === activeTheme.id && !showOnlyFavorites;
                   const IconComp = THEME_ICONS[theme.icon] || Layers;
 
@@ -952,7 +887,7 @@ export const VocabularyLibrary: React.FC<VocabularyLibraryProps> = ({
                     <p className="text-xs text-slate-500 max-w-sm mx-auto">
                       {showOnlyFavorites
                         ? 'Du hast noch keine Vokabeln mit dem Stern markiert. Klicke auf den Stern bei einer Karte, um sie hier zu speichern!'
-                        : 'Passe deine Suche oder den Artikel-Filter an, um Wörter anzuzeigen.'}
+                        : 'Passe deine Suche oder Kategorie an, um Wörter anzuzeigen.'}
                     </p>
                   </div>
                 )}
