@@ -27,7 +27,6 @@ import { LandingPage } from './components/LandingPage';
 import { VocabularyLibrary } from './components/VocabularyLibrary';
 import { GrammarHub } from './components/GrammarHub';
 import { A2ComingSoonModal } from './components/A2ComingSoonModal';
-import { A1CourseExperience } from './components/A1CourseExperience';
 import { getPlaybackSpeed, subscribeSpeechState } from './utils/speech';
 
 const routeToView = (pathname: string): { view: NavViewMode; filter: SectionFilterType } => {
@@ -381,17 +380,6 @@ export function App() {
                   navigateToView('course');
                 }
               }}
-            />
-          </main>
-        ) : activeView === 'course' ? (
-          <main
-            className={`flex-1 w-full mx-auto px-4 sm:px-8 lg:px-12 py-8 transition-all duration-300 ${
-              isSidebarOpen ? 'max-w-6xl' : 'max-w-7xl'
-            }`}
-          >
-            <A1CourseExperience
-              currentChapter={currentPage.chapterNumber}
-              onOpenVocabulary={() => navigateToView('vocab')}
             />
           </main>
         ) : (
